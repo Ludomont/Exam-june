@@ -37,9 +37,10 @@ import pymc3 as pm   # type: ignore
 #
 # Load the data and print the unique values for the columns Genotype, Treatment, Behavior, and class.
 
-# +
-pass
-# -
+data = pd.read_csv('mice.csv')
+
+for col in ['Genotype','Treatment','Behavior','class']:
+    print(col, data[col].unique())
 
 # ### Exercise 2 (max 2 points)
 #
@@ -47,7 +48,10 @@ pass
 #
 
 # +
-pass
+fig, ax = plt.subplots()
+
+data['Bcatenin_N'].hist(ax=ax)
+_ = ax.set_title('Bcatenin_N')
 # -
 
 # ### Exercise 3 (max 3 points)
@@ -56,7 +60,15 @@ pass
 #
 
 # +
-pass
+fig, ax = plt.subplots(ncols=2)
+
+
+col = 'Bcatenin_N'
+for i, f in enumerate(['Genotype', 'Treatment']):
+    for g in data[f].unique():
+        ax[i].hist(data[data[f] == g][col], density=True, label=g)
+        ax[i].legend()
+        ax[i].set_title(f)
 # -
 
 # ### Exercise 4 (max 5 points)
@@ -65,7 +77,18 @@ pass
 #
 
 # +
-pass
+fig, ax = plt.subplots(ncols=2, nrows=77, figsize=(5, 3*77))
+
+
+for j, col in enumerate([c for c in data.columns if c.endswith('_N')]):
+    for i, f in enumerate(['Genotype', 'Treatment']):
+        for g in data[f].unique():
+            ax[j, i].hist(data[data[f] == g][col], density=True, label=g)
+            ax[j, i].legend()
+            ax[j, i].set_title(f'{col} ({f})')
+_ = fig.tight_layout()
+
+
 # -
 
 # ### Exercise 5 (max 7 points)
@@ -75,9 +98,16 @@ pass
 #
 # To get the full marks, you should declare correctly the type hints and add a test within a doctest string.
 
-# +
-pass
-# -
+def mk_class(a: str, b: str, c: str) -> str:
+    """Return a composed string.
+    
+    >>> mk_class('Mattia', 's/he makes difficult exercises!', 'Professor')
+    'm-shemakesdifficultexercises-p'
+    
+    """
+    t = ''.join([x for x in b if x.isalpha()])
+    return a[0].lower() + '-' + t + '-' + c[0].lower() 
+
 
 # ### Exercise 6 (max 5 points)
 #
@@ -87,16 +117,36 @@ pass
 # To get full marks, avoid the use of explicit loops.
 #
 
-# +
-pass
-# -
+assert data.apply(lambda x: mk_class(x['Genotype'], x['Behavior'], x['Treatment']) == x['class'], 
+           axis=1).all()
 
 # ### Exercise 7 (max 4 points)
 #
 # Draw the scatterplots of the standardized values of `'Bcatenin_N'` vs. (also standardized) `'Tau_N'`. Make a different plot for each class. The standard value $z$ corresponding to a value $v$ taken from a series with mean $\bar v$ and standard deviation $\sigma$ is: $z = \frac{v - \bar v}{\sigma}$.
 
 # +
-pass
+x = 'Bcatenin_N'
+y = 'Tau_N'
+classes = data['class'].unique()
+
+def standardize(x: pd.Series) -> pd.Series:
+    """For each value assess its distance from the mean, w.r.t. the standard deviation.
+
+    >>> standardize(pd.Series([-1, 0, 1])).tolist() # mean: 0, devstd: 1
+    [-1.0, 0.0, 1.0]
+    """
+    return (x - x.mean()) / x.std()
+
+fig, ax = plt.subplots(len(classes), figsize=(5, 3*len(classes)))
+for i, c in enumerate(classes):
+    d = data[data['class'] == c]
+    ax[i].scatter(standardize(d[x]), standardize(d[y]))
+    ax[i].set_title(c)
+fig.tight_layout()
+
+
+
+
 # -
 
 # ### Exercise 8 (max 4 points)
@@ -104,7 +154,12 @@ pass
 # Make a picture to compare the distribution of the values of `'Bcatenin_N'` with a Normal (Gaussian) distribution with mean $2.15$ and variance $0.4$.
 
 # +
-pass
+fig, ax = plt.subplots()
+
+ax.hist(data['Bcatenin_N'], density=True, label='Bcatenin_N')
+ax.hist(np.random.normal(2.15, .4, size=data['Bcatenin_N'].count()), 
+        density=True, alpha=.5, label='Random')
+_ = ax.legend()
 # -
 
 
