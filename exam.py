@@ -70,7 +70,7 @@ pass
 
 # ### Exercise 5 (max 7 points)
 #
-# Define a function `mk_class` that takes three string parameters and returns a string composed by three parts joined by `-`: the first and the third part are the lowercase versions of, respectively, the first or the third letter of the first or the third parameter, the second part is the second parameter with all non-alphabetic characters removed.
+# Define a function `mk_class` that takes three string parameters and returns a string composed by three parts joined by `-`: the first and the third part are the lowercase versions of, respectively, the first letter of the first or the third parameter, the second part is the second parameter with all non-alphabetic characters removed.
 # For example, if the parameters are `'Mattia'`, `'s/he makes difficult exercises!'`, `'Professor'`, the return value should be `m-shemakesdifficultexercises-p`.
 #
 # To get the full marks, you should declare correctly the type hints and add a test within a doctest string.
